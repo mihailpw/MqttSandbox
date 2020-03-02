@@ -14,8 +14,8 @@ namespace Mqtt.Server
             Host.CreateDefaultBuilder(args)
                .ConfigureWebHostDefaults(webBuilder =>
                 {
-                    //webBuilder.UseKestrel(c => c.ListenAnyIP(MqttPort, o => o.UseMqtt()));
-                    //webBuilder.UseKestrel(c => c.ListenAnyIP(ApiPort));
+                    webBuilder.UseKestrel(c => c.ListenAnyIP(MqttPort, o => o.UseMqtt()));
+                    webBuilder.UseKestrel(c => c.ListenAnyIP(ApiPort));
                     webBuilder.UseStartup<Startup>();
                 })
                .Build()

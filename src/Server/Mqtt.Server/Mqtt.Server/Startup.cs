@@ -8,6 +8,7 @@ using Microsoft.Extensions.Hosting;
 using Mqtt.Server.Common;
 using MQTTnet;
 using MQTTnet.AspNetCore;
+using MQTTnet.Client.Receiving;
 using MQTTnet.Protocol;
 using MQTTnet.Server;
 
@@ -63,11 +64,11 @@ namespace Mqtt.Server
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
-                endpoints.MapConnectionHandler<MqttConnectionHandler>("/data",
+                endpoints.MapConnectionHandler<MqttConnectionHandler>("",
                     options => options.WebSockets.SubProtocolSelector =
                         MQTTnet.AspNetCore.ApplicationBuilderExtensions.SelectSubProtocol);
             });
-            app.UseMqttEndpoint("/data");
+            app.UseMqttEndpoint("");
             app.UseMqttServer(server =>
             {
                 var handler = provider.GetService<MqttHandler>();
@@ -77,6 +78,7 @@ namespace Mqtt.Server
                 server.ClientUnsubscribedTopicHandler = new MqttServerClientUnsubscribedTopicHandlerDelegate(handler.ClientUnsubscribedAsync);
                 server.StartedHandler = new MqttServerStartedHandlerDelegate(_ => handler.StartedAsync());
                 server.StoppedHandler = new MqttServerStoppedHandlerDelegate(_ => handler.StoppedAsync());
+                server.ApplicationMessageReceivedHandler = new MqttApplicationMessageReceivedHandlerDelegate(handler.MessageReceivedAsync);
             });
         }
     }
